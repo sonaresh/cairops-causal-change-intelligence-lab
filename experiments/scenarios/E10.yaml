@@ -1,0 +1,8 @@
+id: E10
+type: network_latency
+target: toxiproxy/service-b
+description: Cross-service latency through controlled network proxy
+expected_path: [network_latency, dependency_timeout, api_errors]
+baseline: {toxiproxy_latency_ms: 0}
+failure: {toxiproxy_latency_ms: 900}
+governed: {toxiproxy_latency_ms: 100}

@@ -1,0 +1,25 @@
+id: E12
+type: unseen
+target: frontend
+description: Held-out CPU throttling + retries
+expected_path:
+- resource_limit
+- throttling
+- retry_rate
+- api_errors
+failure:
+  set_resources:
+    deployment: frontend
+    cpu: 25m
+    memory: 256Mi
+  patch_env:
+    deployment: service-a
+    RETRIES: '4'
+governed:
+  set_resources:
+    deployment: frontend
+    cpu: 400m
+    memory: 256Mi
+  patch_env:
+    deployment: service-a
+    RETRIES: '1'

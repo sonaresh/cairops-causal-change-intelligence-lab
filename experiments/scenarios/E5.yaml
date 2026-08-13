@@ -1,0 +1,7 @@
+id: E5
+type: iam_policy
+target: iam-probe-role
+description: Dedicated IAM authorization failure
+expected_path: [iam_policy, authorization_denied, service_error]
+failure: {iam_deny: true}
+governed: {iam_deny: false}

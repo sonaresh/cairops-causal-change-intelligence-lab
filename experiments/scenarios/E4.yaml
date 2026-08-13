@@ -1,0 +1,14 @@
+id: E4
+type: security_rule
+target: dependency-sg
+description: Dedicated security-group connectivity loss
+expected_path: [security_rule, dependency_timeout, api_errors]
+baseline:
+  use_dependency_endpoint: true
+  sg_revoke: false
+failure:
+  use_dependency_endpoint: true
+  sg_revoke: true
+governed:
+  use_dependency_endpoint: true
+  sg_revoke: false

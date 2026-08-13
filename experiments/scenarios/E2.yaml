@@ -1,0 +1,13 @@
+id: E2
+type: replica_reduction
+target: deployment/frontend
+description: Capacity shortage under concurrent load
+expected_path: [replica_reduction, queueing, api_latency, slo_violation]
+baseline:
+  patch_env: {deployment: frontend, CPU_BURN_MS: '90'}
+failure:
+  patch_env: {deployment: frontend, CPU_BURN_MS: '90'}
+  scale: {deployment: frontend, replicas: 1}
+governed:
+  patch_env: {deployment: frontend, CPU_BURN_MS: '90'}
+  scale: {deployment: frontend, replicas: 3}

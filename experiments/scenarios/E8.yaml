@@ -1,0 +1,9 @@
+id: E8
+type: route_weight
+target: deployment/service-a
+description: Traffic weighting toward a hot backend
+expected_path: [route_weight, hot_backend, api_latency, slo_violation]
+failure:
+  patch_env: {deployment: service-a, ROUTE_HOT_PERCENT: '90'}
+governed:
+  patch_env: {deployment: service-a, ROUTE_HOT_PERCENT: '10'}

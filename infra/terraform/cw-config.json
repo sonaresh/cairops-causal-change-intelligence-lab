@@ -1,0 +1,5 @@
+{
+  "otelContainerInsights": {
+    "enabled": true
+  }
+}

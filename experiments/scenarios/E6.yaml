@@ -1,0 +1,11 @@
+id: E6
+type: db_parameter
+target: deployment/service-b
+description: Database-facing query latency parameter
+expected_path: [db_parameter, db_latency, api_latency, slo_violation]
+baseline:
+  patch_env: {deployment: service-b, USE_DB: '1', DB_DELAY_MS: '40'}
+failure:
+  patch_env: {deployment: service-b, USE_DB: '1', DB_DELAY_MS: '700'}
+governed:
+  patch_env: {deployment: service-b, USE_DB: '1', DB_DELAY_MS: '80'}

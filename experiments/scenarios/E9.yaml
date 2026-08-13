@@ -1,0 +1,9 @@
+id: E9
+type: dependency_version
+target: deployment/service-b
+description: Dependency API compatibility error
+expected_path: [dependency_version, compat_error, api_errors]
+failure:
+  patch_env: {deployment: service-b, API_VERSION: '2'}
+governed:
+  patch_env: {deployment: service-b, API_VERSION: '1'}

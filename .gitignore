@@ -1,0 +1,37 @@
+@'
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+.terraform.lock.hcl.backup
+
+# Generated CAIROps runtime files
+.lab/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Local experiment logs
+*.log
+
+# Credentials / secrets
+.env
+.env.*
+*.pem
+*.key
+credentials
+credentials.*
+
+# IDE / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Evidence stays local until manuscript dataset is finalized
+evidence/
+'@ | Set-Content .\.gitignore -Encoding ascii

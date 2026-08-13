@@ -1,0 +1,23 @@
+id: E1
+type: deployment
+target: deployment/service-b
+description: Application deployment with progressive memory growth
+
+expected_path:
+  - deployment
+  - memory_pressure
+  - pod_eviction
+  - retry_rate
+  - api_errors
+
+failure:
+  patch_env:
+    deployment: service-b
+    MEMORY_MB: '175'
+    MEMORY_GROWTH_MB: '10'
+
+governed:
+  patch_env:
+    deployment: service-b
+    MEMORY_MB: '70'
+    MEMORY_GROWTH_MB: '5'

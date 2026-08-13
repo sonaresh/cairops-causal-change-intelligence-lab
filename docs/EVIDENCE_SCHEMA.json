@@ -1,0 +1,48 @@
+{
+  "ChangeRecord": [
+    "run_id",
+    "scenario_id",
+    "condition",
+    "type",
+    "target",
+    "diff",
+    "scope",
+    "timestamp",
+    "validation_confidence",
+    "reversibility",
+    "business_criticality",
+    "state",
+    "expected_path"
+  ],
+  "Prediction": [
+    "risk",
+    "risk_band",
+    "confidence",
+    "factors",
+    "top_paths",
+    "alternatives",
+    "inference_latency_ms"
+  ],
+  "Decision": [
+    "guard_action",
+    "guard_reason"
+  ],
+  "TelemetryWindow": [
+    "requests",
+    "errors",
+    "error_rate",
+    "p95_latency_ms",
+    "mean_latency_ms"
+  ],
+  "Outcome": [
+    "actual_failure",
+    "incident",
+    "slo_violation",
+    "intervention_success"
+  ],
+  "LearningUpdate": [
+    "prediction_error",
+    "edge_confidence_update",
+    "calibration_update"
+  ]
+}

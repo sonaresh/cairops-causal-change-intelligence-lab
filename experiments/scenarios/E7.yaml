@@ -1,0 +1,14 @@
+id: E7
+type: resource_limit
+target: deployment/frontend
+description: CPU/memory limit instability under fixed workload
+expected_path: [resource_limit, throttling, retry_rate, api_errors]
+baseline:
+  patch_env: {deployment: frontend, CPU_BURN_MS: '120'}
+  set_resources: {deployment: frontend, cpu: 600m, memory: 256Mi}
+failure:
+  patch_env: {deployment: frontend, CPU_BURN_MS: '120'}
+  set_resources: {deployment: frontend, cpu: 30m, memory: 90Mi}
+governed:
+  patch_env: {deployment: frontend, CPU_BURN_MS: '120'}
+  set_resources: {deployment: frontend, cpu: 500m, memory: 256Mi}

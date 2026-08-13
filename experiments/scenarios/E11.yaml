@@ -1,0 +1,11 @@
+id: E11
+type: combined
+target: service-b+frontend
+description: Memory growth plus replica reduction
+expected_path: [deployment, memory_pressure, pod_eviction, retry_rate, api_errors]
+failure:
+  patch_env: {deployment: service-b, MEMORY_MB: '175'}
+  scale: {deployment: frontend, replicas: 1}
+governed:
+  patch_env: {deployment: service-b, MEMORY_MB: '70'}
+  scale: {deployment: frontend, replicas: 3}

@@ -1,0 +1,14 @@
+id: E3
+type: hpa_threshold
+target: hpa/frontend
+description: Late scale-out under sustained CPU demand
+expected_path: [hpa_threshold, capacity_saturation, api_errors]
+baseline:
+  patch_env: {deployment: frontend, CPU_BURN_MS: '120'}
+  hpa_cpu: 60
+failure:
+  patch_env: {deployment: frontend, CPU_BURN_MS: '120'}
+  hpa_cpu: 95
+governed:
+  patch_env: {deployment: frontend, CPU_BURN_MS: '120'}
+  hpa_cpu: 50
