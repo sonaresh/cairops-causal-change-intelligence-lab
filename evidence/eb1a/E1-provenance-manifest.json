@@ -37,7 +37,9 @@
     "source_control":  {
                            "branch":  "main",
                            "source_commit_before_evidence_closeout":  "4491cda943fddd22ddc9129143b931ae3d05a20a",
-                           "repository":  "https://github.com/sonaresh/cairops-causal-change-intelligence-lab.git"
+                           "repository":  "https://github.com/sonaresh/cairops-causal-change-intelligence-lab.git",
+                           "e1_evidence_commit":  "9f247da156281cc9d4582f941f1cc505b72506d3",
+                           "e1_evidence_commit_verified_on_github":  true
                        },
     "evidence_policy":  {
                             "baseline_invalid_runs_excluded_before_change_injection":  true,
