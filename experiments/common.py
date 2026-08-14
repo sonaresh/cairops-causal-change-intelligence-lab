@@ -68,7 +68,7 @@ def _one_request(url, timeout):
         ok = False
     return (time.perf_counter() - t) * 1000, ok, status
 
-def measure(url, requests_n=120, timeout=3, concurrency=12):
+def measure(url, requests_n=120, timeout=3, concurrency=4):
     latencies = []
     errors = 0
     first_error_ms = None

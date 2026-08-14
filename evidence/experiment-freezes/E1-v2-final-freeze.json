@@ -1,0 +1,63 @@
+{
+    "freeze_id":  "E1-V2-FINAL-FREEZE-20260814T171128Z",
+    "record_type":  "ExperimentFreeze",
+    "experiment":  "E1",
+    "version":  "V2",
+    "status":  "FINAL_FROZEN",
+    "created_utc":  "2026-08-14T17:11:30.6993701Z",
+    "aws":  {
+                "region":  "us-east-1",
+                "lambda_function":  "cairops-p6-research-core",
+                "lambda_code_sha256":  "hTySTl6xtop8Lf6o3Vy2rVWMA5bYQ5XaiWJ0gPHS5Hw=",
+                "lambda_runtime":  "python3.12",
+                "lambda_handler":  "handler.handler",
+                "lambda_last_modified":  "2026-08-14T16:42:56.000+0000"
+            },
+    "protocol":  {
+                     "baseline_requests":  40,
+                     "experimental_requests":  120,
+                     "concurrency":  4,
+                     "request_timeout_seconds":  3,
+                     "conditions":  [
+                                        "safe",
+                                        "failure",
+                                        "governed"
+                                    ],
+                     "baseline_gate":  {
+                                           "require_zero_errors":  true,
+                                           "require_incident_false":  true,
+                                           "require_slo_violation_false":  true
+                                       },
+                     "incident_definition":  {
+                                                 "error_rate_gte":  0.2,
+                                                 "p95_latency_ms_gte":  1200
+                                             },
+                     "slo_violation_definition":  {
+                                                      "error_rate_gte":  0.05,
+                                                      "p95_latency_ms_gte":  600
+                                                  },
+                     "graph_policy":  "Reset E1 learned edges before every final condition run.",
+                     "tuning_policy":  "No model, threshold, scenario, workload, or guard tuning after this freeze except correction of a documented implementation defect.",
+                     "evidence_policy":  "Engineering and precheck runs are excluded from final research samples."
+                 },
+    "e1":  {
+               "safe_memory_mb":  0,
+               "safe_growth_mb":  0,
+               "risky_memory_mb":  175,
+               "risky_growth_mb":  10,
+               "governed_memory_mb":  70,
+               "governed_growth_mb":  5,
+               "memory_limit_mb":  192,
+               "growth_reference_mb":  10
+           },
+    "source_sha256":  {
+                          "./lambda/cairops_core/risk.py":  "E003A3DC27EFAC4558866EFAC0E7C363500BCDB67D2C82539D96C596DFBBA491",
+                          "./experiments/common.py":  "3A2C4AA9E6C9263A869013833061902FC029F8230AF5178D3D040CE5F594CC64",
+                          "./experiments/scenarios/E1.yaml":  "18CC8ECC33F20A407820DA474FD6872F8EAAEA56854E9107E2566A3F18AB34A3",
+                          "./lambda/cairops_core/counterfactual.py":  "20AE3DE9BBF59DF2B57A8D794659CF74CFF9E4F326CDB148493F8110AB02CFE2",
+                          "./lambda/cairops_core/handler.py":  "DE6F520B974221B7312AB8B433A2157F5FED77FAE317F804124FA39BDF8AF99E",
+                          "./lambda/cairops_core/graph.py":  "57AEC1F2764EDD037C05316B361B11B6ED427570AB34069B5BD2AAEB0146489B",
+                          "./experiments/runner.py":  "59AF1EC62D67624CCA04C579BFFF2A10D048FF3FEB0769AA272713021109B849",
+                          "./lambda/cairops_core/guard.py":  "FE2DABDCEBFB625FDE01082C01E34B50CCFA21867E7F805B7541CD67D66BFAA4"
+                      }
+}

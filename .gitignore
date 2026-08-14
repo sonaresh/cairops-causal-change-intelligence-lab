@@ -1,4 +1,3 @@
-@'
 # Terraform
 **/.terraform/
 *.tfstate
@@ -32,6 +31,11 @@ credentials.*
 .DS_Store
 Thumbs.db
 
-# Evidence stays local until manuscript dataset is finalized
-evidence/
-'@ | Set-Content .\.gitignore -Encoding ascii
+# Local backup files
+*.backup
+*.bak
+*.tmp
+
+# Local historical backups
+previous-run-backup/
+evidence/s3-backup/

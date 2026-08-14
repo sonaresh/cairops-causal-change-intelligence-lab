@@ -10,6 +10,16 @@ expected_path:
   - retry_rate
   - api_errors
 
+risk_context:
+  memory_limit_mb: 192
+  growth_reference_mb: 10
+
+safe:
+  patch_env:
+    deployment: service-b
+    MEMORY_MB: '0'
+    MEMORY_GROWTH_MB: '0'
+
 failure:
   patch_env:
     deployment: service-b

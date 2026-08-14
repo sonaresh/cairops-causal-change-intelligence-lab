@@ -87,9 +87,9 @@ catch {
     throw "Unable to parse .lab/images.json: $($_.Exception.Message)"
 }
 
-$FrontendImage = $Images.frontend
-$ServiceAImage = $Images.'service-a'
-$ServiceBImage = $Images.'service-b'
+$FrontendImage = $Images.images.frontend.image
+$ServiceAImage = $Images.images.'service-a'.image
+$ServiceBImage = $Images.images.'service-b'.image
 
 if (-not $FrontendImage) {
     throw "frontend image is missing from images.json."

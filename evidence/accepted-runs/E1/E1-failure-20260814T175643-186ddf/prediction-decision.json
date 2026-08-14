@@ -1,0 +1,110 @@
+{
+  "alternatives": [
+    {
+      "action": "CANARY",
+      "cost": 0.15,
+      "delay": 0.15,
+      "disruption": 0.1,
+      "objective": 0.29946136874820295,
+      "policy": true,
+      "risk": 0.21696136874820296,
+      "scope": 0.1
+    },
+    {
+      "action": "MODIFY",
+      "cost": 0.25,
+      "delay": 0.25,
+      "disruption": 0.15,
+      "objective": 0.3037477312486023,
+      "policy": true,
+      "risk": 0.1687477312486023
+    },
+    {
+      "action": "BLOCK",
+      "cost": 0.25,
+      "delay": 1.0,
+      "disruption": 0.5,
+      "objective": 0.35750000000000004,
+      "policy": true,
+      "risk": 0.02
+    },
+    {
+      "action": "VALIDATE",
+      "cost": 0.1,
+      "delay": 0.35,
+      "disruption": 0.05,
+      "objective": 0.4158886437474043,
+      "policy": true,
+      "risk": 0.31338864374740427
+    },
+    {
+      "action": "ALLOW",
+      "cost": 0.05,
+      "delay": 0.0,
+      "disruption": 0.0,
+      "objective": 0.4946363749960066,
+      "policy": true,
+      "risk": 0.4821363749960066
+    }
+  ],
+  "condition": "failure",
+  "confidence": 0.765,
+  "factors": {
+    "B": 0.75,
+    "D": 0.7,
+    "H": 0.55,
+    "P": 0.28251,
+    "R": 0.85,
+    "S": 1.0,
+    "U": 0.235,
+    "V": 0.7
+  },
+  "guard_action": "CANARY",
+  "guard_reason": "safer_alternative",
+  "inference_latency_ms": 281.526,
+  "record_type": "PredictionDecision",
+  "risk": 0.482136,
+  "risk_band": "medium",
+  "run_id": "E1-failure-20260814T175643-186ddf",
+  "scenario_id": "E1",
+  "timestamp": 1786730251,
+  "top_paths": [
+    {
+      "nodes": [
+        "deployment",
+        "memory_pressure",
+        "pod_eviction",
+        "retry_rate",
+        "api_errors"
+      ],
+      "score": 0.28251005
+    },
+    {
+      "nodes": [
+        "deployment",
+        "memory_pressure",
+        "pod_eviction",
+        "retry_rate",
+        "db_load",
+        "db_saturation",
+        "api_latency",
+        "slo_violation"
+      ],
+      "score": 0.13732185
+    },
+    {
+      "nodes": [
+        "deployment",
+        "memory_pressure",
+        "pod_eviction",
+        "retry_rate",
+        "db_load",
+        "db_saturation",
+        "api_latency",
+        "slo_violation",
+        "business_impact"
+      ],
+      "score": 0.1112307
+    }
+  ]
+}

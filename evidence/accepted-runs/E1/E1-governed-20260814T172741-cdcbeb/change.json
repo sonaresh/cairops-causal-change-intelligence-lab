@@ -1,0 +1,34 @@
+{
+  "business_criticality": 0.75,
+  "condition": "governed",
+  "diff": {
+    "patch_env": {
+      "MEMORY_GROWTH_MB": "10",
+      "MEMORY_MB": "175",
+      "deployment": "service-b"
+    }
+  },
+  "expected_path": [
+    "deployment",
+    "memory_pressure",
+    "pod_eviction",
+    "retry_rate",
+    "api_errors"
+  ],
+  "record_type": "ChangeRecord",
+  "reversibility": 0.85,
+  "run_id": "E1-governed-20260814T172741-cdcbeb",
+  "scenario_id": "E1",
+  "scope": 1.0,
+  "state": {
+    "dependency_criticality": 0.7,
+    "evidence_coverage": 0.8,
+    "graph_confidence": 0.8,
+    "historical_failure_association": 0.55,
+    "telemetry_noise": 0.1
+  },
+  "target": "deployment/service-b",
+  "timestamp": 1786728508.6672945,
+  "type": "deployment",
+  "validation_confidence": 0.7
+}

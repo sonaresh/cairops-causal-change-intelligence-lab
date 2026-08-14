@@ -684,6 +684,26 @@ def publish_change(
         else 1.0
     )
 
+    validation_confidence = 0.70
+
+    if condition in {
+        "failure",
+        "governed",
+        "fixed_canary",
+    }:
+        proposed_diff = scenario_data.get(
+            "failure",
+            {},
+        )
+    else:
+        proposed_diff = scenario_data.get(
+            "safe",
+            scenario_data.get(
+                "baseline",
+                {},
+            ),
+        )
+
     detail = {
         "run_id": run_id,
         "scenario_id": scenario_data[
@@ -696,19 +716,14 @@ def publish_change(
         "target": scenario_data[
             "target"
         ],
-        "diff": scenario_data.get(
-            condition,
+        "diff": proposed_diff,
+        "risk_context": scenario_data.get(
+            "risk_context",
             {},
         ),
         "scope": scope,
         "validation_confidence": (
-            0.75
-            if condition
-            in {
-                "safe",
-                "governed",
-            }
-            else 0.45
+            validation_confidence
         ),
         "reversibility": 0.85,
         "business_criticality": 0.75,
@@ -1051,7 +1066,32 @@ def main():
         + "-baseline",
         40,
     )
+    # --------------------------------------------------------
+    # Baseline validity gate
+    #
+    # Never execute an experimental mutation against an
+    # already-unhealthy baseline. Such a run is invalid for
+    # causal attribution and must be aborted before the change.
+    # --------------------------------------------------------
 
+    if (
+        baseline.get(
+            "incident",
+            False
+        )
+        or baseline.get(
+            "slo_violation",
+            False
+        )
+        or baseline.get(
+            "error_rate",
+            0
+        ) > 0
+    ):
+        raise RuntimeError(
+            "BASELINE_INVALID: experiment aborted before "
+            f"change injection. Baseline={json.dumps(baseline)}"
+        )
     # --------------------------------------------------------
     # 4. Restore canonical base
     # --------------------------------------------------------

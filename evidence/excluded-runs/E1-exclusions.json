@@ -1,0 +1,20 @@
+﻿{
+    "policy":  "Only frozen final trials with healthy pre-change baselines are included in research results. Runs aborted before change injection are not research outcome samples.",
+    "experiment_id":  "E1",
+    "excluded_runs":  [
+                          {
+                              "classification":  "ABORTED_BASELINE_INVALID",
+                              "included_in_final_statistics":  false,
+                              "run_id":  "E1-failure-20260814T171919-7289dc",
+                              "reason":  "Baseline SLO violation before failure injection",
+                              "change_injected":  false
+                          },
+                          {
+                              "classification":  "ABORTED_BASELINE_INVALID",
+                              "included_in_final_statistics":  false,
+                              "run_id":  "E1-governed-20260814T172121-4ef4e7",
+                              "reason":  "Baseline incident/SLO violation before governed change injection",
+                              "change_injected":  false
+                          }
+                      ]
+}

@@ -1,0 +1,169 @@
+{
+  "run_id": "E1-failure-20260814T165633-49211c",
+  "scenario_id": "E1",
+  "condition": "failure",
+  "change_type": "deployment",
+  "expected_path": [
+    "deployment",
+    "memory_pressure",
+    "pod_eviction",
+    "retry_rate",
+    "api_errors"
+  ],
+  "decision": {
+    "inference_latency_ms": 280.012,
+    "run_id": "E1-failure-20260814T165633-49211c",
+    "alternatives": [
+      {
+        "delay": 0.15,
+        "cost": 0.15,
+        "action": "CANARY",
+        "scope": 0.1,
+        "risk": 0.21696136874820296,
+        "policy": true,
+        "objective": 0.29946136874820295,
+        "disruption": 0.1
+      },
+      {
+        "cost": 0.25,
+        "delay": 0.25,
+        "disruption": 0.15,
+        "policy": true,
+        "objective": 0.3037477312486023,
+        "action": "MODIFY",
+        "risk": 0.1687477312486023
+      },
+      {
+        "cost": 0.25,
+        "policy": true,
+        "risk": 0.02,
+        "action": "BLOCK",
+        "delay": 1.0,
+        "disruption": 0.5,
+        "objective": 0.35750000000000004
+      },
+      {
+        "policy": true,
+        "objective": 0.4158886437474043,
+        "cost": 0.1,
+        "delay": 0.35,
+        "action": "VALIDATE",
+        "risk": 0.31338864374740427,
+        "disruption": 0.05
+      },
+      {
+        "cost": 0.05,
+        "risk": 0.4821363749960066,
+        "disruption": 0.0,
+        "objective": 0.4946363749960066,
+        "delay": 0.0,
+        "action": "ALLOW",
+        "policy": true
+      }
+    ],
+    "guard_reason": "safer_alternative",
+    "timestamp": 1786726647.0,
+    "condition": "failure",
+    "risk_band": "medium",
+    "factors": {
+      "S": 1.0,
+      "D": 0.7,
+      "P": 0.28251,
+      "V": 0.7,
+      "R": 0.85,
+      "H": 0.55,
+      "B": 0.75,
+      "U": 0.235
+    },
+    "risk": 0.482136,
+    "guard_action": "CANARY",
+    "confidence": 0.765,
+    "scenario_id": "E1",
+    "top_paths": [
+      {
+        "nodes": [
+          "deployment",
+          "memory_pressure",
+          "pod_eviction",
+          "retry_rate",
+          "api_errors"
+        ],
+        "score": 0.28251005
+      },
+      {
+        "nodes": [
+          "deployment",
+          "memory_pressure",
+          "pod_eviction",
+          "retry_rate",
+          "db_load",
+          "db_saturation",
+          "api_latency",
+          "slo_violation"
+        ],
+        "score": 0.13732185
+      },
+      {
+        "score": 0.1112307,
+        "nodes": [
+          "deployment",
+          "memory_pressure",
+          "pod_eviction",
+          "retry_rate",
+          "db_load",
+          "db_saturation",
+          "api_latency",
+          "slo_violation",
+          "business_impact"
+        ]
+      }
+    ],
+    "record_type": "PredictionDecision"
+  },
+  "baseline": {
+    "requests": 40,
+    "concurrency": 4,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p95_latency_ms": 402.0019999879878,
+    "mean_latency_ms": 176.7046275017492,
+    "first_error_elapsed_ms": null,
+    "incident": false,
+    "slo_violation": false
+  },
+  "observation": {
+    "requests": 120,
+    "concurrency": 4,
+    "errors": 47,
+    "error_rate": 0.39166666666666666,
+    "p95_latency_ms": 284.9222000222653,
+    "mean_latency_ms": 142.82743500201227,
+    "first_error_elapsed_ms": 1371.0490000084974,
+    "incident": true,
+    "slo_violation": true,
+    "prediction_to_action_complete_ms": 32054.255485534668,
+    "prediction_lead_time_ms_proxy": 33425.304485543165
+  },
+  "verifier": {
+    "run_id": "E1-failure-20260814T165633-49211c",
+    "guard_action": "CANARY",
+    "actual_failure": 1,
+    "prediction_error": 0.517864,
+    "intervention_success": 0,
+    "observed_latency_ms": 284.9222000222653,
+    "error_rate": 0.39166666666666666,
+    "timestamp": 1786726689,
+    "record_type": "Outcome",
+    "evidence": {
+      "bucket": "cairops-p6-research-evidence-62056b9e",
+      "key": "runs/E1-failure-20260814T165633-49211c/outcome.json",
+      "sha256": "67cf12d0511faa88d23f9688d9da3ee1fde0ccbe98b6c1e8e3f9b26ded5d2bc5"
+    }
+  },
+  "timing": {
+    "decision_request_epoch": 1786726642.7036264,
+    "decision_received_epoch": 1786726648.2357948,
+    "action_completed_epoch": 1786726680.2900503
+  },
+  "timestamp": 1786726688.8350418
+}

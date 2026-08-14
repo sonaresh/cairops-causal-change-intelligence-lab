@@ -1,0 +1,37 @@
+{
+  "condition": "safe",
+  "evidence_timestamp": 1786729351,
+  "expected_path": [
+    "deployment",
+    "memory_pressure",
+    "pod_eviction",
+    "retry_rate",
+    "api_errors"
+  ],
+  "graph_updates": [],
+  "guard_action": "ALLOW",
+  "observation": {
+    "concurrency": 4,
+    "error_rate": 0.0,
+    "errors": 0,
+    "first_error_elapsed_ms": null,
+    "incident": false,
+    "mean_latency_ms": 140.522700833147,
+    "p95_latency_ms": 349.2211999837309,
+    "requests": 120,
+    "slo_violation": false
+  },
+  "outcome": {
+    "actual_failure": 0,
+    "error_rate": 0.0,
+    "intervention_success": 0,
+    "observed_latency_ms": 349.2211999837309,
+    "prediction_error": 0.210777,
+    "record_type": "Outcome",
+    "timestamp": 1786729351
+  },
+  "prediction_risk": 0.210777,
+  "record_type": "OutcomeEvidence",
+  "run_id": "E1-safe-20260814T174125-db4477",
+  "scenario_id": "E1"
+}

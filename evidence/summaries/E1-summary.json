@@ -1,0 +1,88 @@
+﻿{
+    "experiment_id":  "E1",
+    "valid_trials_per_condition":  5,
+    "conditions":  {
+                       "governed":  {
+                                        "incidents":  0,
+                                        "incident_rate":  0,
+                                        "trials":  5,
+                                        "risk":  0.482136,
+                                        "intervention_successes":  5,
+                                        "error_rates":  [
+                                                            0,
+                                                            0,
+                                                            0,
+                                                            0,
+                                                            0
+                                                        ],
+                                        "actual_failures":  0,
+                                        "guard_action":  "CANARY"
+                                    },
+                       "failure":  {
+                                       "incidents":  5,
+                                       "incident_rate":  1,
+                                       "trials":  5,
+                                       "risk":  0.482136,
+                                       "error_rates":  [
+                                                           0.4333333333,
+                                                           0.3333333333,
+                                                           0.4833333333,
+                                                           0.375,
+                                                           0.4666666667
+                                                       ],
+                                       "mean_error_rate":  0.4183333333,
+                                       "actual_failures":  5,
+                                       "guard_action":  "CANARY"
+                                   },
+                       "safe":  {
+                                    "incident_rate":  0,
+                                    "risk":  0.210777,
+                                    "actual_failures":  0,
+                                    "error_rates":  [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                    "incidents":  0,
+                                    "guard_action":  "ALLOW",
+                                    "trials":  5
+                                }
+                   },
+    "version":  "V2",
+    "experiment_name":  "Bad EKS Deployment / Progressive Memory Exhaustion",
+    "total_accepted_runs":  15,
+    "primary_result":  {
+                           "uncontrolled_incidents":  "5/5",
+                           "prevented_incidents":  "5/5",
+                           "interpretation":  "Within the frozen E1 experimental configuration, the risky deployment caused incidents in all uncontrolled trials while the CAIROps-governed intervention prevented incidents in all five governed trials.",
+                           "governed_incidents":  "0/5",
+                           "experimental_prevention_rate":  1
+                       },
+    "integrity":  {
+                      "immutable_aws_evidence_preserved":  true,
+                      "final_freeze_manifest":  "evidence/experiment-freezes/E1-v2-final-freeze.json",
+                      "accepted_outcome_files":  15,
+                      "sha256_verified":  true
+                  },
+    "status":  "COMPLETE_VERIFIED",
+    "framework":  "CAIROps",
+    "experimental_configuration":  {
+                                       "memory_limit_mb":  192,
+                                       "concurrency":  4,
+                                       "slo_error_rate_threshold":  0.05,
+                                       "safe_growth_mb":  0,
+                                       "safe_memory_mb":  0,
+                                       "slo_p95_ms_threshold":  600,
+                                       "incident_error_rate_threshold":  0.2,
+                                       "risky_growth_mb":  10,
+                                       "incident_p95_ms_threshold":  1200,
+                                       "experimental_requests":  120,
+                                       "baseline_requests":  40,
+                                       "governed_memory_mb":  70,
+                                       "risky_memory_mb":  175,
+                                       "timeout_seconds":  3,
+                                       "governed_growth_mb":  5
+                                   }
+}

@@ -1,0 +1,37 @@
+{
+  "condition": "governed",
+  "evidence_timestamp": 1786729791,
+  "expected_path": [
+    "deployment",
+    "memory_pressure",
+    "pod_eviction",
+    "retry_rate",
+    "api_errors"
+  ],
+  "graph_updates": [],
+  "guard_action": "CANARY",
+  "observation": {
+    "concurrency": 4,
+    "error_rate": 0.0,
+    "errors": 0,
+    "first_error_elapsed_ms": null,
+    "incident": false,
+    "mean_latency_ms": 186.39986166551049,
+    "p95_latency_ms": 387.9190000006929,
+    "requests": 120,
+    "slo_violation": false
+  },
+  "outcome": {
+    "actual_failure": 0,
+    "error_rate": 0.0,
+    "intervention_success": 1,
+    "observed_latency_ms": 387.9190000006929,
+    "prediction_error": 0.482136,
+    "record_type": "Outcome",
+    "timestamp": 1786729791
+  },
+  "prediction_risk": 0.482136,
+  "record_type": "OutcomeEvidence",
+  "run_id": "E1-governed-20260814T174810-7e222a",
+  "scenario_id": "E1"
+}

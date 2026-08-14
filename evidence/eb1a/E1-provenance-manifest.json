@@ -1,0 +1,68 @@
+﻿{
+    "experiment_id":  "E1",
+    "provenance_status":  "VERIFIED",
+    "experiment":  {
+                       "main_result":  {
+                                           "uncontrolled_failure_incidents":  "5/5",
+                                           "governed_incidents":  "0/5",
+                                           "uncontrolled_mean_error_rate":  0.4183333333,
+                                           "successful_governed_interventions":  "5/5",
+                                           "safe_incidents":  "0/5"
+                                       },
+                       "version":  "E1-V2",
+                       "frozen_configuration":  true,
+                       "conditions":  [
+                                          "safe",
+                                          "failure",
+                                          "governed"
+                                      ],
+                       "trials_per_condition":  5,
+                       "accepted_runs":  15
+                   },
+    "integrity":  {
+                      "mismatches":  0,
+                      "checksum_directory":  "evidence/checksums",
+                      "freeze_manifest":  "evidence/experiment-freezes/E1-v2-final-freeze.json",
+                      "evidence_directory":  "evidence/accepted-runs/E1",
+                      "local_outcomes_verified":  15,
+                      "hash_algorithm":  "SHA-256",
+                      "summary":  "evidence/summaries/E1-summary.json"
+                  },
+    "purpose":  [
+                    "Peer-reviewed research manuscript experimental validation",
+                    "Reproducibility and research provenance",
+                    "Supporting evidence of implemented original technical research for EB1A documentation"
+                ],
+    "eb1a_note":  "This provenance manifest documents implementation, experimental execution, reproducibility, and authorship-related technical provenance. It is supporting evidence and is not by itself a determination that any USCIS EB1A criterion has been satisfied.",
+    "source_control":  {
+                           "branch":  "main",
+                           "source_commit_before_evidence_closeout":  "4491cda943fddd22ddc9129143b931ae3d05a20a",
+                           "repository":  "https://github.com/sonaresh/cairops-causal-change-intelligence-lab.git"
+                       },
+    "evidence_policy":  {
+                            "baseline_invalid_runs_excluded_before_change_injection":  true,
+                            "aws_environment_destroy_only_after_E1_to_E12_evidence_export":  true,
+                            "configuration_frozen_before_final_trials":  true,
+                            "engineering_prechecks_excluded_from_final_results":  true,
+                            "raw_results_not_modified":  true
+                        },
+    "artifact":  "CAIROps E1 Experimental Evidence",
+    "paper_title":  "CAIROps: A Causal Change Intelligence Framework for Predicting, Explaining, and Preventing Enterprise Cloud Incidents",
+    "framework":  "CAIROps",
+    "implementation":  {
+                           "region":  "us-east-1",
+                           "evidence_services":  [
+                                                     "Amazon S3",
+                                                     "Amazon DynamoDB",
+                                                     "Amazon CloudWatch"
+                                                 ],
+                           "platform":  "AWS",
+                           "orchestration":  [
+                                                 "Amazon EKS",
+                                                 "AWS Lambda",
+                                                 "AWS Step Functions",
+                                                 "Amazon EventBridge"
+                                             ],
+                           "runtime":  "Python 3.12"
+                       }
+}

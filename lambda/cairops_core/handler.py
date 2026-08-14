@@ -216,6 +216,104 @@ def _graph_overrides():
 
 
 # ============================================================
+# Change severity calculation
+# ============================================================
+
+def _change_severity(change):
+    """
+    Derive proposal severity from the proposed change itself,
+    never from the experimental condition label.
+
+    For deployment-memory scenarios, severity is based on the
+    strongest normalized memory stressor:
+
+      initial memory / memory limit
+      progressive growth / growth reference
+
+    The result is always clamped to [0, 1].
+    """
+
+    if change.get("type") != "deployment":
+        return 1.0
+
+    diff = (
+        change.get("diff")
+        or {}
+    )
+
+    patch_env = (
+        diff.get("patch_env")
+        or {}
+    )
+
+    try:
+
+        memory_mb = float(
+            patch_env.get(
+                "MEMORY_MB",
+                0
+            )
+        )
+
+        growth_mb = float(
+            patch_env.get(
+                "MEMORY_GROWTH_MB",
+                0
+            )
+        )
+
+        context = (
+            change.get(
+                "risk_context"
+            )
+            or {}
+        )
+
+        memory_limit_mb = max(
+            float(
+                context.get(
+                    "memory_limit_mb",
+                    192
+                )
+            ),
+            1.0,
+        )
+
+        growth_reference_mb = max(
+            float(
+                context.get(
+                    "growth_reference_mb",
+                    10
+                )
+            ),
+            1.0,
+        )
+
+        memory_ratio = clamp(
+            memory_mb
+            / memory_limit_mb
+        )
+
+        growth_ratio = clamp(
+            growth_mb
+            / growth_reference_mb
+        )
+
+        return clamp(
+            max(
+                memory_ratio,
+                growth_ratio,
+            )
+        )
+
+    except (
+        TypeError,
+        ValueError,
+    ):
+        return 0.0
+
+
+# ============================================================
 # CIIR factor calculation
 # ============================================================
 
@@ -223,10 +321,33 @@ def _factors(
     change,
     top_path_score
 ):
+    """
+    Calculate CAIROps CIIR factors.
+
+    V2 removes condition-label leakage by deriving proposal
+    severity from the actual proposed change.
+
+    S = proposed change severity
+    P = causal path propagation weighted by severity
+    B = business exposure weighted by severity
+    """
+
     state = (
         change.get("state")
         or {}
     )
+
+    # --------------------------------------------------------
+    # Proposed-change severity
+    # --------------------------------------------------------
+
+    S = _change_severity(
+        change
+    )
+
+    # --------------------------------------------------------
+    # Historical association
+    # --------------------------------------------------------
 
     H = clamp(
         state.get(
@@ -235,6 +356,10 @@ def _factors(
         )
     )
 
+    # --------------------------------------------------------
+    # Dependency criticality
+    # --------------------------------------------------------
+
     D = clamp(
         state.get(
             "dependency_criticality",
@@ -242,9 +367,28 @@ def _factors(
         )
     )
 
+    # --------------------------------------------------------
+    # Causal propagation
+    #
+    # V2:
+    # A causal path should contribute risk in proportion to
+    # the severity of the proposed change.
+    # --------------------------------------------------------
+
     P = clamp(
         top_path_score
+        * S
     )
+
+    # --------------------------------------------------------
+    # Business exposure
+    #
+    # V2:
+    # Exposure depends on:
+    #   scope
+    #   business criticality
+    #   actual proposed-change severity
+    # --------------------------------------------------------
 
     B = clamp(
         float(
@@ -260,7 +404,13 @@ def _factors(
                 0.5
             )
         )
+        *
+        S
     )
+
+    # --------------------------------------------------------
+    # Evidence / graph quality
+    # --------------------------------------------------------
 
     evidence_coverage = clamp(
         state.get(
@@ -283,6 +433,10 @@ def _factors(
         )
     )
 
+    # --------------------------------------------------------
+    # Uncertainty
+    # --------------------------------------------------------
+
     U = clamp(
         1
         -
@@ -298,12 +452,25 @@ def _factors(
         * telemetry_noise
     )
 
+    # --------------------------------------------------------
+    # Validation confidence
+    #
+    # IMPORTANT:
+    # runner.py V2 must provide the same validation confidence
+    # across SAFE / FAILURE / GOVERNED so this does not encode
+    # the experimental condition.
+    # --------------------------------------------------------
+
     V = clamp(
         change.get(
             "validation_confidence",
             0.5
         )
     )
+
+    # --------------------------------------------------------
+    # Reversibility
+    # --------------------------------------------------------
 
     R = clamp(
         change.get(
@@ -320,6 +487,7 @@ def _factors(
         "U": U,
         "V": V,
         "R": R,
+        "S": S,
     }
 
 
@@ -345,7 +513,9 @@ def handler(change, context):
             "CAIROps core input is missing run_id."
         )
 
-    run_id = change["run_id"]
+    run_id = change[
+        "run_id"
+    ]
 
     scenario_id = change.get(
         "scenario_id"

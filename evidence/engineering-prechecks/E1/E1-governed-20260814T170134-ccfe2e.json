@@ -1,0 +1,168 @@
+{
+  "run_id": "E1-governed-20260814T170134-ccfe2e",
+  "scenario_id": "E1",
+  "condition": "governed",
+  "change_type": "deployment",
+  "expected_path": [
+    "deployment",
+    "memory_pressure",
+    "pod_eviction",
+    "retry_rate",
+    "api_errors"
+  ],
+  "decision": {
+    "inference_latency_ms": 246.999,
+    "run_id": "E1-governed-20260814T170134-ccfe2e",
+    "guard_reason": "safer_alternative",
+    "alternatives": [
+      {
+        "risk": 0.21696136874820296,
+        "cost": 0.15,
+        "policy": true,
+        "objective": 0.29946136874820295,
+        "delay": 0.15,
+        "action": "CANARY",
+        "disruption": 0.1,
+        "scope": 0.1
+      },
+      {
+        "risk": 0.1687477312486023,
+        "delay": 0.25,
+        "cost": 0.25,
+        "policy": true,
+        "action": "MODIFY",
+        "disruption": 0.15,
+        "objective": 0.3037477312486023
+      },
+      {
+        "disruption": 0.5,
+        "action": "BLOCK",
+        "risk": 0.02,
+        "delay": 1.0,
+        "policy": true,
+        "cost": 0.25,
+        "objective": 0.35750000000000004
+      },
+      {
+        "action": "VALIDATE",
+        "cost": 0.1,
+        "disruption": 0.05,
+        "risk": 0.31338864374740427,
+        "policy": true,
+        "delay": 0.35,
+        "objective": 0.4158886437474043
+      },
+      {
+        "disruption": 0.0,
+        "delay": 0.0,
+        "action": "ALLOW",
+        "risk": 0.4821363749960066,
+        "cost": 0.05,
+        "policy": true,
+        "objective": 0.4946363749960066
+      }
+    ],
+    "timestamp": 1786726944.0,
+    "condition": "governed",
+    "risk_band": "medium",
+    "factors": {
+      "H": 0.55,
+      "D": 0.7,
+      "B": 0.75,
+      "U": 0.235,
+      "V": 0.7,
+      "R": 0.85,
+      "S": 1.0,
+      "P": 0.28251
+    },
+    "risk": 0.482136,
+    "guard_action": "CANARY",
+    "confidence": 0.765,
+    "scenario_id": "E1",
+    "record_type": "PredictionDecision",
+    "top_paths": [
+      {
+        "nodes": [
+          "deployment",
+          "memory_pressure",
+          "pod_eviction",
+          "retry_rate",
+          "api_errors"
+        ],
+        "score": 0.28251005
+      },
+      {
+        "score": 0.13732185,
+        "nodes": [
+          "deployment",
+          "memory_pressure",
+          "pod_eviction",
+          "retry_rate",
+          "db_load",
+          "db_saturation",
+          "api_latency",
+          "slo_violation"
+        ]
+      },
+      {
+        "score": 0.1112307,
+        "nodes": [
+          "deployment",
+          "memory_pressure",
+          "pod_eviction",
+          "retry_rate",
+          "db_load",
+          "db_saturation",
+          "api_latency",
+          "slo_violation",
+          "business_impact"
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "requests": 40,
+    "concurrency": 4,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p95_latency_ms": 354.40989999915473,
+    "mean_latency_ms": 157.69819499910227,
+    "first_error_elapsed_ms": null,
+    "incident": false,
+    "slo_violation": false
+  },
+  "observation": {
+    "requests": 120,
+    "concurrency": 4,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p95_latency_ms": 237.2746999899391,
+    "mean_latency_ms": 152.48258083568848,
+    "first_error_elapsed_ms": null,
+    "incident": false,
+    "slo_violation": false,
+    "prediction_to_action_complete_ms": 33480.26466369629
+  },
+  "verifier": {
+    "run_id": "E1-governed-20260814T170134-ccfe2e",
+    "guard_action": "CANARY",
+    "actual_failure": 0,
+    "prediction_error": 0.482136,
+    "intervention_success": 1,
+    "observed_latency_ms": 237.2746999899391,
+    "error_rate": 0.0,
+    "timestamp": 1786726988,
+    "record_type": "Outcome",
+    "evidence": {
+      "bucket": "cairops-p6-research-evidence-62056b9e",
+      "key": "runs/E1-governed-20260814T170134-ccfe2e/outcome.json",
+      "sha256": "717c766e2f2a5efde979dfc5204ad3139ae34eebf35d49d072aa08693fb56208"
+    }
+  },
+  "timing": {
+    "decision_request_epoch": 1786726940.1586485,
+    "decision_received_epoch": 1786726945.9998024,
+    "action_completed_epoch": 1786726979.480067
+  },
+  "timestamp": 1786726987.8776486
+}
