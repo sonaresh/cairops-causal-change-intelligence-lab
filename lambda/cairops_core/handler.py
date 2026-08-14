@@ -224,93 +224,169 @@ def _change_severity(change):
     Derive proposal severity from the proposed change itself,
     never from the experimental condition label.
 
-    For deployment-memory scenarios, severity is based on the
-    strongest normalized memory stressor:
+    E1 - deployment memory:
+      severity = max(
+          initial memory / memory limit,
+          progressive growth / growth reference
+      )
 
-      initial memory / memory limit
-      progressive growth / growth reference
+    E2 - replica reduction:
+      capacity_deficit =
+          max(0, minimum_safe_replicas / proposed_replicas - 1)
 
-    The result is always clamped to [0, 1].
+      severity = clamp(capacity_deficit)
+
+    All returned values are clamped to [0, 1].
     """
 
-    if change.get("type") != "deployment":
-        return 1.0
+    change_type = change.get("type")
 
     diff = (
         change.get("diff")
         or {}
     )
 
-    patch_env = (
-        diff.get("patch_env")
+    context = (
+        change.get("risk_context")
         or {}
     )
 
-    try:
+    # --------------------------------------------------------
+    # E2 - Replica reduction severity
+    # --------------------------------------------------------
 
-        memory_mb = float(
-            patch_env.get(
-                "MEMORY_MB",
-                0
-            )
-        )
+    if change_type == "replica_reduction":
 
-        growth_mb = float(
-            patch_env.get(
-                "MEMORY_GROWTH_MB",
-                0
-            )
-        )
-
-        context = (
-            change.get(
-                "risk_context"
-            )
+        scale_diff = (
+            diff.get("scale")
             or {}
         )
 
-        memory_limit_mb = max(
-            float(
-                context.get(
-                    "memory_limit_mb",
-                    192
-                )
-            ),
-            1.0,
-        )
+        try:
 
-        growth_reference_mb = max(
-            float(
-                context.get(
-                    "growth_reference_mb",
-                    10
-                )
-            ),
-            1.0,
-        )
-
-        memory_ratio = clamp(
-            memory_mb
-            / memory_limit_mb
-        )
-
-        growth_ratio = clamp(
-            growth_mb
-            / growth_reference_mb
-        )
-
-        return clamp(
-            max(
-                memory_ratio,
-                growth_ratio,
+            proposed_replicas = max(
+                float(
+                    scale_diff.get(
+                        "replicas",
+                        context.get(
+                            "current_replicas",
+                            1
+                        )
+                    )
+                ),
+                1.0,
             )
+
+            minimum_safe_replicas = max(
+                float(
+                    context.get(
+                        "minimum_safe_replicas",
+                        1
+                    )
+                ),
+                1.0,
+            )
+
+            capacity_deficit = max(
+                0.0,
+                (
+                    minimum_safe_replicas
+                    / proposed_replicas
+                )
+                - 1.0
+            )
+
+            return clamp(
+                capacity_deficit
+            )
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+            return 0.0
+
+    # --------------------------------------------------------
+    # E1 - Deployment-memory severity
+    # --------------------------------------------------------
+
+    if change_type == "deployment":
+
+        patch_env = (
+            diff.get("patch_env")
+            or {}
         )
 
-    except (
-        TypeError,
-        ValueError,
-    ):
-        return 0.0
+        try:
+
+            memory_mb = float(
+                patch_env.get(
+                    "MEMORY_MB",
+                    0
+                )
+            )
+
+            growth_mb = float(
+                patch_env.get(
+                    "MEMORY_GROWTH_MB",
+                    0
+                )
+            )
+
+            memory_limit_mb = max(
+                float(
+                    context.get(
+                        "memory_limit_mb",
+                        192
+                    )
+                ),
+                1.0,
+            )
+
+            growth_reference_mb = max(
+                float(
+                    context.get(
+                        "growth_reference_mb",
+                        10
+                    )
+                ),
+                1.0,
+            )
+
+            memory_ratio = clamp(
+                memory_mb
+                / memory_limit_mb
+            )
+
+            growth_ratio = clamp(
+                growth_mb
+                / growth_reference_mb
+            )
+
+            return clamp(
+                max(
+                    memory_ratio,
+                    growth_ratio,
+                )
+            )
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+            return 0.0
+
+    # --------------------------------------------------------
+    # Future scenario types
+    # --------------------------------------------------------
+    #
+    # Existing behavior is retained for scenario types that do
+    # not yet have a proposal-derived severity model. Each later
+    # experiment (E3-E12) must receive its own severity model
+    # before final frozen trials.
+    # --------------------------------------------------------
+
+    return 1.0
 
 
 # ============================================================
@@ -324,10 +400,10 @@ def _factors(
     """
     Calculate CAIROps CIIR factors.
 
-    V2 removes condition-label leakage by deriving proposal
-    severity from the actual proposed change.
+    Severity S is derived from the actual proposed change and
+    never from the experimental condition label.
 
-    S = proposed change severity
+    S = proposed-change severity
     P = causal path propagation weighted by severity
     B = business exposure weighted by severity
     """
@@ -369,10 +445,6 @@ def _factors(
 
     # --------------------------------------------------------
     # Causal propagation
-    #
-    # V2:
-    # A causal path should contribute risk in proportion to
-    # the severity of the proposed change.
     # --------------------------------------------------------
 
     P = clamp(
@@ -382,12 +454,6 @@ def _factors(
 
     # --------------------------------------------------------
     # Business exposure
-    #
-    # V2:
-    # Exposure depends on:
-    #   scope
-    #   business criticality
-    #   actual proposed-change severity
     # --------------------------------------------------------
 
     B = clamp(
@@ -454,11 +520,6 @@ def _factors(
 
     # --------------------------------------------------------
     # Validation confidence
-    #
-    # IMPORTANT:
-    # runner.py V2 must provide the same validation confidence
-    # across SAFE / FAILURE / GOVERNED so this does not encode
-    # the experimental condition.
     # --------------------------------------------------------
 
     V = clamp(
@@ -494,6 +555,7 @@ def _factors(
 # ============================================================
 # Lambda handler
 # ============================================================
+
 
 def handler(change, context):
 

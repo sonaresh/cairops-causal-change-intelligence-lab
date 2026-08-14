@@ -83,6 +83,12 @@ def reset_base():
         2,
     )
 
+    set_hpa_bounds(
+        "frontend",
+        2,
+        6,
+    )
+
     hpa_cpu(
         60
     )
@@ -112,6 +118,353 @@ def reset_base():
         f"reset-{int(time.time())}",
         invoke_probe=False,
     )
+
+
+# ============================================================
+# Baseline stabilization
+# ============================================================
+
+def stabilize_baseline():
+    """
+    Wait for canonical Kubernetes workloads to become stable
+    after reset/base mutations before measured traffic starts.
+
+    Warm-up traffic is engineering stabilization only. It is not
+    included in the official 40-request baseline or experimental
+    observation.
+    """
+
+    deployments = [
+        "frontend",
+        "service-a",
+        "service-b",
+    ]
+
+    for deployment in deployments:
+
+        kubectl(
+            [
+                "rollout",
+                "status",
+                f"deployment/{deployment}",
+                "-n",
+                "cairops-lab",
+                "--timeout=120s",
+            ]
+        )
+
+    # Give kube-proxy/load-balancer paths and application
+    # connection pools a short deterministic settling interval.
+    time.sleep(
+        15
+    )
+
+    warmup = measure(
+        endpoint(),
+        requests_n=20,
+        concurrency=4,
+        timeout=3,
+    )
+
+    print(
+        "Baseline warm-up:",
+        json.dumps(
+            warmup,
+            indent=2,
+        ),
+    )
+
+    return warmup
+
+
+# ============================================================
+# HPA bounds control
+# ============================================================
+
+def set_hpa_bounds(
+    name,
+    min_replicas,
+    max_replicas,
+):
+    """
+    Temporarily control HPA replica bounds.
+
+    E2 uses this to isolate replica-reduction behavior from
+    automatic HPA recovery.
+
+    reset_base() restores the normal frontend bounds:
+        minReplicas = 2
+        maxReplicas = 6
+    """
+
+    kubectl(
+        [
+            "patch",
+            "hpa",
+            name,
+            "-n",
+            "cairops-lab",
+            "--type=merge",
+            "-p",
+            json.dumps(
+                {
+                    "spec": {
+                        "minReplicas":
+                        int(min_replicas),
+                        "maxReplicas":
+                        int(max_replicas),
+                    }
+                }
+            ),
+        ]
+    )
+
+
+
+# ============================================================
+# Kubernetes execution-state verification
+# ============================================================
+
+def wait_for_deployment_replicas(
+    deployment,
+    expected_replicas,
+    timeout=120,
+):
+    """
+    Wait until the Deployment spec and Ready replica count both
+    equal the expected experimental replica count.
+
+    This prevents the measured observation window from starting
+    while Kubernetes/HPA/rolling-update convergence is still in
+    progress.
+    """
+
+    end = time.time() + timeout
+    last_state = None
+
+    while time.time() < end:
+
+        raw = kubectl(
+            [
+                "get",
+                "deployment",
+                deployment,
+                "-n",
+                "cairops-lab",
+                "-o",
+                "json",
+            ]
+        )
+
+        state = json.loads(
+            raw
+        )
+
+        desired = int(
+            state.get(
+                "spec",
+                {}
+            ).get(
+                "replicas",
+                0
+            )
+            or 0
+        )
+
+        ready = int(
+            state.get(
+                "status",
+                {}
+            ).get(
+                "readyReplicas",
+                0
+            )
+            or 0
+        )
+
+        available = int(
+            state.get(
+                "status",
+                {}
+            ).get(
+                "availableReplicas",
+                0
+            )
+            or 0
+        )
+
+        updated = int(
+            state.get(
+                "status",
+                {}
+            ).get(
+                "updatedReplicas",
+                0
+            )
+            or 0
+        )
+
+        last_state = {
+            "deployment": deployment,
+            "expected_replicas": int(
+                expected_replicas
+            ),
+            "desired_replicas": desired,
+            "ready_replicas": ready,
+            "available_replicas": available,
+            "updated_replicas": updated,
+        }
+
+        if (
+            desired
+            == int(expected_replicas)
+            and ready
+            == int(expected_replicas)
+            and available
+            == int(expected_replicas)
+            and updated
+            == int(expected_replicas)
+        ):
+            print(
+                "Execution replica state:",
+                json.dumps(
+                    last_state,
+                    indent=2,
+                ),
+            )
+
+            return last_state
+
+        time.sleep(
+            2
+        )
+
+    raise RuntimeError(
+        "REPLICA_STATE_INVALID: deployment did not converge "
+        f"to expected replicas within {timeout}s. "
+        f"LastState={json.dumps(last_state)}"
+    )
+
+
+def get_hpa_state(
+    name,
+):
+    """
+    Capture current HPA bounds and replica status for experiment
+    provenance and engineering diagnostics.
+    """
+
+    raw = kubectl(
+        [
+            "get",
+            "hpa",
+            name,
+            "-n",
+            "cairops-lab",
+            "-o",
+            "json",
+        ]
+    )
+
+    hpa = json.loads(
+        raw
+    )
+
+    spec = hpa.get(
+        "spec",
+        {}
+    )
+
+    status = hpa.get(
+        "status",
+        {}
+    )
+
+    result = {
+        "name": name,
+        "min_replicas": spec.get(
+            "minReplicas"
+        ),
+        "max_replicas": spec.get(
+            "maxReplicas"
+        ),
+        "current_replicas": status.get(
+            "currentReplicas"
+        ),
+        "desired_replicas": status.get(
+            "desiredReplicas"
+        ),
+    }
+
+    print(
+        "Execution HPA state:",
+        json.dumps(
+            result,
+            indent=2,
+        ),
+    )
+
+    return result
+
+
+def verify_execution_state(
+    scenario_data,
+    actions,
+):
+    """
+    Verify the Kubernetes state actually produced by the selected
+    experimental action before outcome measurement begins.
+
+    For scenarios with explicit scale actions, the runner waits
+    for the target deployment to converge to that exact replica
+    count.
+
+    For scenarios with hpa_bounds, the current HPA state is also
+    captured.
+    """
+
+    execution_state = {}
+
+    if (
+        actions
+        and "hpa_bounds"
+        in actions
+    ):
+
+        hpa = actions[
+            "hpa_bounds"
+        ]
+
+        execution_state[
+            "hpa"
+        ] = get_hpa_state(
+            hpa[
+                "name"
+            ]
+        )
+
+    if (
+        actions
+        and "scale"
+        in actions
+    ):
+
+        scale_action = actions[
+            "scale"
+        ]
+
+        execution_state[
+            "deployment"
+        ] = wait_for_deployment_replicas(
+            scale_action[
+                "deployment"
+            ],
+            scale_action[
+                "replicas"
+            ],
+        )
+
+    return execution_state
 
 
 # ============================================================
@@ -557,6 +910,35 @@ def apply_actions(
         )
     )
 
+    # --------------------------------------------------------
+    # HPA bounds first
+    #
+    # E2 must constrain autoscaling before the replica mutation
+    # is executed so the HPA cannot undo the experiment.
+    # --------------------------------------------------------
+
+    if "hpa_bounds" in actions:
+
+        item = actions[
+            "hpa_bounds"
+        ]
+
+        set_hpa_bounds(
+            item[
+                "name"
+            ],
+            item[
+                "min_replicas"
+            ],
+            item[
+                "max_replicas"
+            ],
+        )
+
+    # --------------------------------------------------------
+    # Environment mutation
+    # --------------------------------------------------------
+
     if "patch_env" in actions:
 
         item = actions[
@@ -571,6 +953,10 @@ def apply_actions(
             deployment,
             item,
         )
+
+    # --------------------------------------------------------
+    # Explicit replica count after HPA has been constrained
+    # --------------------------------------------------------
 
     if "scale" in actions:
 
@@ -878,6 +1264,7 @@ def get_decision(run_id, timeout=90):
         f'within {timeout}s. Last response={last_raw!r}'
     )
 
+
 # ============================================================
 # Outcome verification
 # ============================================================
@@ -1040,6 +1427,10 @@ def main():
 
     reset_base()
 
+    # Wait for reset-induced Kubernetes rollouts and warm the
+    # application before the official baseline is measured.
+    stabilize_baseline()
+
     # --------------------------------------------------------
     # 2. Apply scenario-specific baseline if configured
     # --------------------------------------------------------
@@ -1056,8 +1447,12 @@ def main():
             + "-baseline",
         )
 
+        # Scenario-specific baseline actions may themselves
+        # trigger a rollout or endpoint cold state.
+        stabilize_baseline()
+
     # --------------------------------------------------------
-    # 3. Measure baseline
+    # 3. Measure official baseline
     # --------------------------------------------------------
 
     baseline = observe(
@@ -1066,6 +1461,7 @@ def main():
         + "-baseline",
         40,
     )
+
     # --------------------------------------------------------
     # Baseline validity gate
     #
@@ -1092,11 +1488,17 @@ def main():
             "BASELINE_INVALID: experiment aborted before "
             f"change injection. Baseline={json.dumps(baseline)}"
         )
+
     # --------------------------------------------------------
     # 4. Restore canonical base
     # --------------------------------------------------------
 
     reset_base()
+
+    # reset_base() can trigger fresh rollout activity. Ensure
+    # the experiment begins from a settled canonical state
+    # before CAIROps receives the proposed change.
+    stabilize_baseline()
 
     # --------------------------------------------------------
     # 5. Publish proposed change to CAIROps
@@ -1204,6 +1606,15 @@ def main():
         run_id,
     )
 
+    # --------------------------------------------------------
+    # Verify actual executed Kubernetes state
+    # --------------------------------------------------------
+
+    execution_state = verify_execution_state(
+        scenario_data,
+        actions,
+    )
+
     action_completed = (
         time.time()
     )
@@ -1281,6 +1692,7 @@ def main():
         "baseline": baseline,
         "observation": observation,
         "verifier": verifier,
+        "execution_state": execution_state,
         "timing": {
             "decision_request_epoch":
             decision_started,

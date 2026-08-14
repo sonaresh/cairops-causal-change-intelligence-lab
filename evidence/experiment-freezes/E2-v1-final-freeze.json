@@ -1,0 +1,136 @@
+﻿{
+    "freeze_id":  "E2-v1-final",
+    "experiment_id":  "E2",
+    "experiment_name":  "Replica Reduction / Capacity Shortage",
+    "status":  "FROZEN_FOR_FINAL_TRIALS",
+    "freeze_timestamp_utc":  "2026-08-14T21:34:01.9436826Z",
+    "methodology":  {
+                        "design":  "SAFE / FAILURE / GOVERNED",
+                        "accepted_trials_per_condition":  5,
+                        "accepted_triplets":  5,
+                        "total_accepted_final_runs":  15,
+                        "baseline_requests":  40,
+                        "observation_requests":  120,
+                        "concurrency":  4,
+                        "request_timeout_seconds":  3,
+                        "slo_p95_latency_ms":  600,
+                        "incident_p95_latency_ms":  1200,
+                        "incident_error_rate":  0.2,
+                        "slo_error_rate":  0.05,
+                        "baseline_invalid_policy":  "Abort before experimental mutation; exclude from accepted final sample.",
+                        "tuning_policy":  "No parameter, threshold, runner, normalizer, core, verifier, or scenario changes after this freeze.",
+                        "warmup_policy":  "Warm-up traffic is engineering stabilization only and is not part of the official baseline or final observation sample."
+                    },
+    "frozen_e2_configuration":  {
+                                    "change_type":  "replica_reduction",
+                                    "target":  "deployment/frontend",
+                                    "expected_path":  [
+                                                          "replica_reduction",
+                                                          "queueing",
+                                                          "api_latency",
+                                                          "slo_violation"
+                                                      ],
+                                    "risk_context":  {
+                                                         "current_replicas":  2,
+                                                         "minimum_safe_replicas":  2
+                                                     },
+                                    "workload":  {
+                                                     "CPU_BURN_MS":  200
+                                                 },
+                                    "safe":  {
+                                                 "hpa_min":  2,
+                                                 "hpa_max":  2,
+                                                 "replicas":  2
+                                             },
+                                    "failure":  {
+                                                    "hpa_min":  1,
+                                                    "hpa_max":  1,
+                                                    "replicas":  1
+                                                },
+                                    "governed":  {
+                                                     "proposed_replicas":  1,
+                                                     "executed_hpa_min":  2,
+                                                     "executed_hpa_max":  2,
+                                                     "executed_replicas":  2
+                                                 }
+                                },
+    "engineering_gate_evidence":  {
+                                      "safe_run":  "E2-safe-20260814T211952-42b1c0",
+                                      "failure_run":  "E2-failure-20260814T211146-5d7ecd",
+                                      "governed_run":  "E2-governed-20260814T212614-73095d",
+                                      "safe_result":  {
+                                                          "p95_latency_ms":  454.04089998919517,
+                                                          "slo_violation":  false,
+                                                          "actual_failure":  0,
+                                                          "guard_action":  "ALLOW",
+                                                          "severity":  0
+                                                      },
+                                      "failure_result":  {
+                                                             "p95_latency_ms":  653.64239999325946,
+                                                             "slo_violation":  true,
+                                                             "actual_failure":  1,
+                                                             "guard_action":  "CANARY",
+                                                             "severity":  1
+                                                         },
+                                      "governed_result":  {
+                                                              "p95_latency_ms":  438.66089999210089,
+                                                              "slo_violation":  false,
+                                                              "actual_failure":  0,
+                                                              "intervention_success":  1,
+                                                              "guard_action":  "CANARY",
+                                                              "severity":  1
+                                                          }
+                                  },
+    "provenance":  {
+                       "git_commit":  "fb15c30bbe5b3192e6febcbb6344eb420e03ede1",
+                       "git_branch":  "main",
+                       "working_tree_clean":  false,
+                       "working_tree_status":  [
+                                                   " M experiments/runner.py",
+                                                   " M experiments/scenarios/E2.yaml",
+                                                   " M lambda/cairops_core/handler.py",
+                                                   " M lambda/change_normalizer/handler.py",
+                                                   "?? evidence/E2/",
+                                                   "?? evidence/engineering-prechecks/E2/",
+                                                   "?? freeze-e2-final.ps1",
+                                                   "?? run-e2-final.ps1",
+                                                   "?? scripts/run-e2-engineering.ps1"
+                                               ],
+                       "aws_account_id":  "276291855524",
+                       "aws_region":  "us-east-1",
+                       "eks_cluster_name":  "cairops-p6-research",
+                       "eks_cluster_arn":  "arn:aws:eks:us-east-1:276291855524:cluster/cairops-p6-research",
+                       "eks_version":  "1.35",
+                       "kubectl_client_version":  "v1.36.1",
+                       "python_version":  "Python 3.12.10",
+                       "aws_profile_used":  "aicir-lab"
+                   },
+    "frozen_files":  [
+                         {
+                             "path":  "experiments/scenarios/E2.yaml",
+                             "sha256":  "5cb769d90b390a129f7964c7053e665e2ee6c80f280f8b8cc4355285ceed4e02"
+                         },
+                         {
+                             "path":  "experiments/runner.py",
+                             "sha256":  "c69e4284142049618e074e1a75e0c563ceb4dae047337a7f4ae5413c6390d22d"
+                         },
+                         {
+                             "path":  "experiments/common.py",
+                             "sha256":  "3a2c4aa9e6c9263a869013833061902fc029f8230af5178d3d040ce5f594cc64"
+                         },
+                         {
+                             "path":  "lambda/change_normalizer/handler.py",
+                             "sha256":  "bd5619cb85a8e7f10fd17f97b99fbb8d1b79e4274c0d65367f1ebbff0f03da4b"
+                         },
+                         {
+                             "path":  "lambda/outcome_verifier/handler.py",
+                             "sha256":  "fc15d98f01889554c4ed8575d499784919e0867e71896a262ea588833def4a78"
+                         }
+                     ],
+    "evidence_rules":  {
+                           "raw_evidence":  "Preserve immutable raw run evidence and AWS-generated evidence.",
+                           "accepted_run_rule":  "A run counts only if its official baseline passes and the experiment reaches observation/verifier completion.",
+                           "excluded_run_rule":  "Baseline-invalid or pre-freeze engineering attempts are retained but excluded from final statistical sample.",
+                           "post_freeze_change_rule":  "Any change to a frozen file/configuration invalidates this freeze and requires a new freeze version before additional accepted final trials."
+                       }
+}

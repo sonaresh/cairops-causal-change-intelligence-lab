@@ -1,13 +1,50 @@
 id: E2
 type: replica_reduction
 target: deployment/frontend
-description: Capacity shortage under concurrent load
-expected_path: [replica_reduction, queueing, api_latency, slo_violation]
-baseline:
-  patch_env: {deployment: frontend, CPU_BURN_MS: '90'}
+description: Frontend capacity shortage caused by unsafe replica reduction
+
+expected_path:
+  - replica_reduction
+  - queueing
+  - api_latency
+  - slo_violation
+
+risk_context:
+  current_replicas: 2
+  minimum_safe_replicas: 2
+
+safe:
+  hpa_bounds:
+    name: frontend
+    min_replicas: 2
+    max_replicas: 2
+  patch_env:
+    deployment: frontend
+    CPU_BURN_MS: '200'
+  scale:
+    deployment: frontend
+    replicas: 2
+
 failure:
-  patch_env: {deployment: frontend, CPU_BURN_MS: '90'}
-  scale: {deployment: frontend, replicas: 1}
+  hpa_bounds:
+    name: frontend
+    min_replicas: 1
+    max_replicas: 1
+  patch_env:
+    deployment: frontend
+    CPU_BURN_MS: '200'
+  scale:
+    deployment: frontend
+    replicas: 1
+
 governed:
-  patch_env: {deployment: frontend, CPU_BURN_MS: '90'}
-  scale: {deployment: frontend, replicas: 3}
+  hpa_bounds:
+    name: frontend
+    min_replicas: 2
+    max_replicas: 2
+  patch_env:
+    deployment: frontend
+    CPU_BURN_MS: '200'
+  scale:
+    deployment: frontend
+    replicas: 2

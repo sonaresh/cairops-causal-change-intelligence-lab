@@ -1,0 +1,157 @@
+{
+  "run_id": "E2-safe-20260814T215555-cd71c3",
+  "scenario_id": "E2",
+  "condition": "safe",
+  "change_type": "replica_reduction",
+  "expected_path": [
+    "replica_reduction",
+    "queueing",
+    "api_latency",
+    "slo_violation"
+  ],
+  "decision": {
+    "inference_latency_ms": 241.297,
+    "run_id": "E2-safe-20260814T215555-cd71c3",
+    "alternatives": [
+      {
+        "policy": true,
+        "scope": 0.1,
+        "objective": 0.17734951634982532,
+        "cost": 0.15,
+        "delay": 0.15,
+        "action": "CANARY",
+        "disruption": 0.1,
+        "risk": 0.09484951634982533
+      },
+      {
+        "delay": 0.0,
+        "disruption": 0.0,
+        "policy": true,
+        "action": "ALLOW",
+        "risk": 0.21077670299961185,
+        "cost": 0.05,
+        "objective": 0.22327670299961186
+      },
+      {
+        "objective": 0.2395048569497477,
+        "risk": 0.1370048569497477,
+        "delay": 0.35,
+        "policy": true,
+        "disruption": 0.05,
+        "action": "VALIDATE",
+        "cost": 0.1
+      },
+      {
+        "disruption": 0.5,
+        "risk": 0.02,
+        "policy": true,
+        "cost": 0.25,
+        "delay": 1.0,
+        "objective": 0.35750000000000004,
+        "action": "BLOCK"
+      }
+    ],
+    "guard_reason": "low_risk",
+    "timestamp": 1786744657.0,
+    "condition": "safe",
+    "risk_band": "low",
+    "factors": {
+      "U": 0.235,
+      "V": 0.7,
+      "R": 0.85,
+      "B": 0.0,
+      "H": 0.55,
+      "P": 0.0,
+      "S": 0.0,
+      "D": 0.7
+    },
+    "risk": 0.210777,
+    "guard_action": "ALLOW",
+    "confidence": 0.765,
+    "top_paths": [
+      {
+        "nodes": [
+          "replica_reduction",
+          "queueing",
+          "api_latency",
+          "slo_violation"
+        ],
+        "score": 0.02554193
+      },
+      {
+        "nodes": [
+          "replica_reduction",
+          "queueing",
+          "api_latency",
+          "slo_violation",
+          "business_impact"
+        ],
+        "score": 0.02068896
+      }
+    ],
+    "record_type": "PredictionDecision",
+    "scenario_id": "E2"
+  },
+  "baseline": {
+    "requests": 40,
+    "concurrency": 4,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p95_latency_ms": 127.48190001002513,
+    "mean_latency_ms": 111.732837499585,
+    "first_error_elapsed_ms": null,
+    "incident": false,
+    "slo_violation": false
+  },
+  "observation": {
+    "requests": 120,
+    "concurrency": 4,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p95_latency_ms": 465.0449999899138,
+    "mean_latency_ms": 415.24723083275603,
+    "first_error_elapsed_ms": null,
+    "incident": false,
+    "slo_violation": false,
+    "prediction_to_action_complete_ms": 34413.2239818573
+  },
+  "verifier": {
+    "run_id": "E2-safe-20260814T215555-cd71c3",
+    "guard_action": "ALLOW",
+    "actual_failure": 0,
+    "prediction_error": 0.210777,
+    "intervention_success": 0,
+    "observed_latency_ms": 465.0449999899138,
+    "error_rate": 0.0,
+    "timestamp": 1786744707,
+    "record_type": "Outcome",
+    "evidence": {
+      "bucket": "cairops-p6-research-evidence-62056b9e",
+      "key": "runs/E2-safe-20260814T215555-cd71c3/outcome.json",
+      "sha256": "12084169298014c02eb63070d2e693d2cf1fc39014a049b848833b2b02b87b58"
+    }
+  },
+  "execution_state": {
+    "hpa": {
+      "name": "frontend",
+      "min_replicas": 2,
+      "max_replicas": 2,
+      "current_replicas": 2,
+      "desired_replicas": 2
+    },
+    "deployment": {
+      "deployment": "frontend",
+      "expected_replicas": 2,
+      "desired_replicas": 2,
+      "ready_replicas": 2,
+      "available_replicas": 2,
+      "updated_replicas": 2
+    }
+  },
+  "timing": {
+    "decision_request_epoch": 1786744652.9499507,
+    "decision_received_epoch": 1786744656.129941,
+    "action_completed_epoch": 1786744690.543165
+  },
+  "timestamp": 1786744706.2996929
+}
